@@ -39,33 +39,45 @@
 from deluge.ui.client import client
 import deluge.component as component
 
-__target_priority = 5
+__target_priority = [7, 5, 2]
 __last_first = {}
 
 def priority_loop(meth):
     torrents = meth()
-    for t in torrents:
-        tor = component.get("TorrentManager").torrents[t]
-        if tor.status.state == tor.status.downloading:
-            lf = __last_first.get(t)
-            if not(lf):
-                lf = 0
+    for t in torrents:	# Run this for every torrent
+        tor = component.get("TorrentManager").torrents[t]	# Get some more info of the torrent?
+        if tor.status.state == tor.status.downloading: # Only look at downloading torrents
+            lf = __last_first.get(t)	# Find previous lf for this torrent
+            if not(lf):					# If there was no previous one,
+                lf = 0					# Set to 0? wtf? Wouldn't it already be False?
             try:
-                cand = tor.status.pieces.index(False,lf)
-                if (tor.handle.piece_priority(cand) == 0):
-                    prios = tor.handle.piece_priorities()
-                    while (tor.handle.piece_priority(cand) == 0):
-                        cand += 1
-                        pcand = 0
-                        for (i,x) in enumerate(prios[cand:]):
-                            if x > 0:
-                                pcand = i + cand
+                cand = tor.status.pieces.index(False,lf)	# cand = piece status
+                if (tor.handle.piece_priority(cand) == 0):	#
+                    prios = tor.handle.piece_priorities()	# prios = list of priorities
+                    while (tor.handle.piece_priority(cand) == 0): 
+                        cand += 1		# Increment some counter
+                        pcand = 0		# Reset something relating to this counter
+                        for (i,x) in enumerate(prios[cand:]):	# priorities starting at cand
+                            if x > 0:	# If piece is desired
+                                pcand = i + cand	# set pcand to
                                 break
                         cand = max(tor.status.pieces.index(False,cand), pcand)
                 lf = cand
             except ValueError:
                 continue
             # lf is now the first un-downloaded, desired piece of this torrent
-            if (tor.handle.piece_priority(lf) < __target_priority):
-                tor.handle.piece_priority(lf,__target_priority)
+            next_ones = []				# Init list of pieces starting at lf
+            for i in range(60):
+            	piece = lf + i
+            	if i < 10:
+            		target_priority = 7
+            	if i >= 10 and i < 30:
+            		target_priority = 5
+            	if i >= 30:
+            		target_priority = 2
+            	try:
+            		if (tor.handle.piece_priority(piece) < target_priority):
+            			tor.handle.piece_priority(piece, target_priority)
+            	except Exception as e:
+            		print('DrewError: ' + e)
             __last_first[t] = lf

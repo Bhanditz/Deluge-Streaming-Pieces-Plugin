@@ -124,13 +124,10 @@ class MultiSquare(gtk.DrawingArea):
     def __qtt_callback(self, (sq,pri)):
         pris = {
             0: lambda : "Do Not Download",
-            1: lambda : "Normal (1)",
-            2: lambda : "High (2)",
-            3: lambda : "High (3)",
-            4: lambda : "High (4)",
-            5: lambda : "Higher (5)",
-            6: lambda : "Higher (6)",
-            7: lambda : "Highest (7)"
+            1: lambda : "Normal",
+            2: lambda : "High",
+            5: lambda : "Higher",
+            7: lambda : "Highest"
             }[pri]()
         self.__sq = sq
         self.__tooltip_text = "Piece: %i (%s)" % (sq, pris)
@@ -352,7 +349,7 @@ class PiecesTab(Tab):
 
         vb = gtk.VBox()
         vb.add(self._ms)
-        self.cb = gtk.CheckButton(label="Set priority of first un-downloaded piece to High")
+        self.cb = gtk.CheckButton(label="Enable Streaming Mode")
         self.cb.connect("toggled",self.onPrioTogg)
         vb.pack_end(self.cb,expand=False,fill=False,padding=5)
 
