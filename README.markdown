@@ -1,4 +1,7 @@
-# Pieces Plugin
+# Streaming Pieces Plugin
+This is a fork of the Pieces plugin for Deluge to add a functional streaming mode. Simply click "Enable Streaming Mode," and the torrent pieces will download sequentially. You can then use the file(s) being downloaded immediately, as long as you do not read the data faster than it is being downloaded. This plugin should be used in place of, not alongside, the original Pieces plugin.
+
+# Original Pieces Plugin
 https://github.com/nicklan/Deluge-Pieces-Plugin
 
 (c)2010 by Nick Lanham <nick@afternight.org>
